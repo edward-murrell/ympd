@@ -437,9 +437,9 @@ int mpd_put_browse(char *buffer, char *path)
                 song = mpd_entity_get_song(entity);
                 cur += snprintf(cur, end  - cur, 
                         "{\"type\":\"song\",\"uri\":\"%s\",\"duration\":%d,\"title\":\"%s\"},",
-                        mpd_song_get_uri(song),
+                        mpd_escape_json_title(mpd_song_get_uri(song)),
                         mpd_song_get_duration(song),
-                        mpd_get_title(song)
+                        mpd_escape_json_title(mpd_get_title(song))
                         );
                 break;
 
