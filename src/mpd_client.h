@@ -88,6 +88,7 @@ int mpd_put_state(char *buffer, int *current_song_id, unsigned *queue_version);
 int mpd_put_current_song(char *buffer);
 int mpd_put_playlist(char *buffer);
 int mpd_put_browse(char *buffer, char *path);
+const char * mpd_escape_json_title(const char *buffer);
 
 int mpd_port;
 char mpd_host[255];

@@ -445,10 +445,15 @@ int mpd_put_browse(char *buffer, char *path)
 
             case MPD_ENTITY_TYPE_DIRECTORY:
                 dir = mpd_entity_get_directory(entity);
+                const char * dir_str_esc = mpd_directory_get_path(dir);
+                const char * dir_str = mpd_escape_json_title(dir_str_esc);
+                const char * dir_base = (const char*)basename((char*)dir_str);
+                
+                //printf("dir string is %s\n",dir_str);
                 cur += snprintf(cur, end  - cur, 
                         "{\"type\":\"directory\",\"dir\":\"%s\", \"basename\":\"%s\"},",
-                        mpd_directory_get_path(dir), 
-                        basename((char *)mpd_directory_get_path(dir))
+                        dir_str,
+                        dir_base
                         );
                 break;
 
@@ -473,4 +478,28 @@ int mpd_put_browse(char *buffer, char *path)
     cur--;
     cur += snprintf(cur, end  - cur, "] }");
     return cur - buffer;
+}
+
+const char * mpd_escape_json_title(const char *buffer) {
+    size_t length = strlen(buffer);
+    length = (length*2)+1;
+    char * str = malloc(length);
+
+    int i = 0;
+    const char * ptr = buffer;
+    while(*ptr != '\0') {
+        if(*ptr=='"') {
+            str[i++] = '&';
+            str[i++] = 'q';
+            str[i++] = 'u';
+            str[i++] = 'o';
+            str[i++] = 't';
+            str[i++] = ';';
+        } else {
+            str[i++] = *ptr;
+        }
+        *ptr++;
+    }
+    str[i] = '\0';
+    return str;
 }
