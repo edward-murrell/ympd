@@ -285,22 +285,14 @@ void mpd_loop()
 
 char* mpd_get_title(struct mpd_song const *song)
 {
-    char *str, *ptr;
+    char *str, *new;
 
     str = (char *)mpd_song_get_tag(song, MPD_TAG_TITLE, 0);
     if(str == NULL){
         str = basename((char *)mpd_song_get_uri(song));
     }
-
-    if(str == NULL)
-        return NULL;
-
-    ptr = str;
-    while(*ptr++ != '\0')
-        if(*ptr=='"')
-            *ptr='\'';
-
-    return str;
+    new = (char*) mpd_escape_json_title(str);
+    return new;
 }
 
 int mpd_put_state(char *buffer, int *current_song_id, unsigned *queue_version)
