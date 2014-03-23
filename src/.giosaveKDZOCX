@@ -285,14 +285,14 @@ void mpd_loop()
 
 char* mpd_get_title(struct mpd_song const *song)
 {
-    char *str, *new;
+    char *str, *ptr;
 
     str = (char *)mpd_song_get_tag(song, MPD_TAG_TITLE, 0);
     if(str == NULL){
         str = basename((char *)mpd_song_get_uri(song));
     }
-    new = (char*) mpd_escape_json_title(str);
-    return new;
+
+    return mpd_escape_json_title(str);
 }
 
 int mpd_put_state(char *buffer, int *current_song_id, unsigned *queue_version)
@@ -347,10 +347,10 @@ int mpd_put_current_song(char *buffer)
             mpd_get_title(song));
     if(mpd_song_get_tag(song, MPD_TAG_ARTIST, 0) != NULL)
         cur += snprintf(cur, end - cur, ", \"artist\":\"%s\"",
-            mpd_escape_json_title(mpd_song_get_tag(song, MPD_TAG_ARTIST, 0)));
+            mpd_song_get_tag(song, MPD_TAG_ARTIST, 0));
     if(mpd_song_get_tag(song, MPD_TAG_ALBUM, 0) != NULL)
         cur += snprintf(cur, end - cur, ", \"album\":\"%s\"",
-            mpd_escape_json_title(mpd_song_get_tag(song, MPD_TAG_ALBUM, 0)));
+            mpd_song_get_tag(song, MPD_TAG_ALBUM, 0));
 
     cur += snprintf(cur, end - cur, "}}");
     mpd_song_free(song);
@@ -476,18 +476,21 @@ const char * mpd_escape_json_title(const char *buffer) {
     size_t length = strlen(buffer);
     length = (length*2)+1;
     char * str = malloc(length);
-    static const char qstr[7] = "&quot;";
 
     int i = 0;
     const char * ptr = buffer;
     while(*ptr != '\0') {
         if(*ptr=='"') {
-            strncpy((str+i),qstr,6);
-            i = i+6;
+            str[i++] = '&';
+            str[i++] = 'q';
+            str[i++] = 'u';
+            str[i++] = 'o';
+            str[i++] = 't';
+            str[i++] = ';';
         } else {
             str[i++] = *ptr;
         }
-        ptr++;
+        *ptr++;
     }
     str[i] = '\0';
     return str;
