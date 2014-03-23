@@ -291,7 +291,7 @@ function webSocketConnect() {
                         $.get( "/api/get_playlist", socket.onmessage);
                     break;
                 case "song_change":
-                    $('#currenttrack').text(" " + obj.data.title);
+                    $('#currenttrack').html(" " + obj.data.title);
                     var notification = "<strong><h4>" + obj.data.title + "</h4></strong>";
 
                     if(obj.data.album) {
