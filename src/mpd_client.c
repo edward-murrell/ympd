@@ -476,21 +476,18 @@ const char * mpd_escape_json_title(const char *buffer) {
     size_t length = strlen(buffer);
     length = (length*2)+1;
     char * str = malloc(length);
+    static const char qstr[7] = "&quot;";
 
     int i = 0;
     const char * ptr = buffer;
     while(*ptr != '\0') {
         if(*ptr=='"') {
-            str[i++] = '&';
-            str[i++] = 'q';
-            str[i++] = 'u';
-            str[i++] = 'o';
-            str[i++] = 't';
-            str[i++] = ';';
+            strncpy((str+i),qstr,6);
+            i = i+6;
         } else {
             str[i++] = *ptr;
         }
-        *ptr++;
+        ptr++;
     }
     str[i] = '\0';
     return str;
